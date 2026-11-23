@@ -1,0 +1,25 @@
+
+name: Build LilzyTranslator ASI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Win32 ASI
+        run: msbuild LilzyTranslator.vcxproj /m /p:Configuration=Release /p:Platform=Win32
+
+      - name: Upload ASI
+        uses: actions/upload-artifact@v4
+        with:
+          name: LilzyTranslator-Win32-ASI
+          path: bin/Release/LilzyTranslator.asi
+          
