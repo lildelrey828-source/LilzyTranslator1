@@ -1,0 +1,8 @@
+#include "config.hpp"
+#include <windows.h>
+#include <fstream>
+#include <algorithm>
+static std::string trim(std::string s){auto a=s.find_first_not_of(" \t\r\n");if(a==s.npos)return {};auto b=s.find_last_not_of(" \t\r\n");return s.substr(a,b-a+1);}
+std::string ConfigFile(){char p[MAX_PATH]{};GetModuleFileNameA(nullptr,p,MAX_PATH);std::string s=p;auto n=s.find_last_of("\\/");return (n==s.npos?std::string("."):s.substr(0,n))+"\\lilzy_translator.ini";}
+bool LoadConfig(Config& c){std::ifstream f(ConfigFile());if(!f)return SaveConfig(c);std::string l,sec;while(std::getline(f,l)){l=trim(l);if(l.empty()||l[0]=='#'||l[0]==';')continue;if(l.front()=='['&&l.back()==']'){sec=l.substr(1,l.size()-2);continue;}auto p=l.find('=');if(p==l.npos)continue;auto k=trim(l.substr(0,p)),v=trim(l.substr(p+1));if(sec=="general"){if(k=="enabled")c.enabled=v=="1";else if(k=="auto_copy")c.autoCopy=v=="1";else if(k=="incoming")c.incoming=v=="1";else if(k=="provider")c.provider=v;else if(k=="api_key")c.apiKey=v;else if(k=="model")c.model=v;else if(k=="preset")c.preset=v;else if(k=="mood")c.mood=v;}else if(sec=="player_filter"){if(k=="name_1")c.locked[0]=v;else if(k=="name_2")c.locked[1]=v;else if(k=="name_3")c.locked[2]=v;}}if(c.provider!="groq")c.provider="free";return true;}
+bool SaveConfig(const Config& c){std::ofstream f(ConfigFile(),std::ios::trunc);if(!f)return false;f<<"[general]\nenabled="<<c.enabled<<"\nauto_copy="<<c.autoCopy<<"\nincoming="<<c.incoming<<"\nprovider="<<c.provider<<"\napi_key="<<c.apiKey<<"\nmodel="<<c.model<<"\npreset="<<c.preset<<"\nmood="<<c.mood<<"\n\n[player_filter]\n";for(int i=0;i<3;i++)f<<"name_"<<i+1<<"="<<c.locked[i]<<"\n";return !!f;}
