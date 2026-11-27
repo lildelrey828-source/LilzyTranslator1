@@ -10,7 +10,9 @@ struct Config {
     std::string model = "openai/gpt-oss-20b";
     std::string preset = "casual";
     std::string mood = "neutral";
-    std::array<std::string, 3> locked{};
+    std::array<std::string, 3> locked{}; // legacy name whitelist; retained for config compatibility
+    bool playerFilterEnabled = false;
+    int targetPlayerId = -1;
 };
 std::string ConfigFile();
 bool LoadConfig(Config& c);
