@@ -1,30 +1,31 @@
-name: Build LilzyTranslator ASI
+
+name: Build Lilzy Translator ASI
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+      - name: Fetch dependencies
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch v1.91.9b https://github.com/ocornut/imgui.git external/imgui
+          git clone --depth 1 https://github.com/imring/RakHook.git external/RakHook
+          git clone --depth 1 --branch v1.3.4 https://github.com/TsudaKageyu/minhook.git external/minhook
 
-      - name: Build Win32 ASI
-        shell: cmd
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Build x86 Release
         run: msbuild LilzyTranslator.vcxproj /m /p:Configuration=Release /p:Platform=Win32
 
-      - name: Upload ASI
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: LilzyTranslator-Win32-ASI
+          name: LilzyTranslator-ASI-R5.1
           path: bin/Release/LilzyTranslator.asi
-          if-no-files-found: error
-          
