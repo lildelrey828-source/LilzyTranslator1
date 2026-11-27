@@ -27,5 +27,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: LilzyTranslator-ASI-R5.1
+          name: LilzyTranslator-ASI-R5.01
           path: bin/Release/LilzyTranslator.asi
